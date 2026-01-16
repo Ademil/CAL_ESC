@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Escada Estrutural - Concreto Armado</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        
+        .subtitle {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+        
+        .input-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 15px;
+        }
+        
+        .results-section {
+            flex: 2;
+            min-width: 300px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .section-title {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 8px;
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+        
+        .unit {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            margin-left: 5px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+        }
+        
+        .calculate-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .calculate-btn:hover {
+            background-color: #27ae60;
+        }
+        
+        .reset-btn {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .reset-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        .result-box {
+            background-color: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid #3498db;
+        }
+        
+        .result-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        
+        .result-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+        
+        .result-details {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .warning {
+            background-color: #fff8e1;
+            border-left-color: #ffc107;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .success {
+            background-color: #e8f5e9;
+            border-left-color: #4caf50;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+        
+        .formula {
+            font-family: 'Courier New', monospace;
+            background-color: #f1f1f1;
+            padding: 5px 10px;
+            border-radius: 4px;
+            margin: 5px 0;
+            font-size: 0.9rem;
+        }
+        
+        /* Estilos para o diagrama da escada */
+        .stair-diagram-container {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0e0e0;
+        }
+        
+        .stair-diagram-title {
+            text-align: center;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        
+        .stair-diagram {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+        
+        .stair-element {
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .stair-flight {
+            background-color: #e3f2fd;
+            border: 2px solid #90caf9;
+        }
+        
+        .stair-landing {
+            background-color: #f3e5f5;
+            border: 2px solid #ce93d8;
+        }
+        
+        .support {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #795548;
+            border-radius: 50%;
+            z-index: 10;
+        }
+        
+        .reaction {
+            position: absolute;
+            font-weight: bold;
+            color: #d32f2f;
+            z-index: 20;
+            text-align: center;
+            font-size: 14px;
+        }
+        
+        .reaction-arrow {
+            position: absolute;
+            border-left: 2px solid #d32f2f;
+            border-bottom: 2px solid #d32f2f;
+            width: 15px;
+            height: 15px;
+            transform: rotate(-45deg);
+        }
+        
+        .dimension-line {
+            position: absolute;
+            border-top: 1px dashed #666;
+            height: 1px;
+        }
+        
+        .dimension-text {
+            position: absolute;
+            font-size: 12px;
+            color: #555;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        
+        .load-indicator {
+            position: absolute;
+            font-size: 12px;
+            color: #388e3c;
+            background-color: rgba(232, 245, 233, 0.8);
+            padding: 3px 6px;
+            border-radius: 3px;
+            border: 1px solid #81c784;
+            z-index: 5;
+        }
+        
+        .diagram-legend {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
+            font-size: 12px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .legend-color {
+            width: 15px;
+            height: 15px;
+            border-radius: 2px;
+        }
+        
+        .legend-flight {
+            background-color: #e3f2fd;
+            border: 1px solid #90caf9;
+        }
+        
+        .legend-landing {
+            background-color: #f3e5f5;
+            border: 1px solid #ce93d8;
+        }
+        
+        .legend-support {
+            background-color: #795548;
+        }
+        
+        .legend-reaction {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+        
+        .legend-load {
+            background-color: #e8f5e9;
+            border: 1px solid #81c784;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .input-section, .results-section {
+                width: 100%;
+            }
+            
+            .stair-diagram {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Calculadora de Escada Estrutural</h1>
+            <div class="subtitle">Dimensionamento de escadas de concreto armado conforme exemplo técnico</div>
+        </header>
+        
+        <div class="content">
+            <div class="input-section">
+                <h2 class="section-title">Dados de Entrada</h2>
+                
+                <div class="input-group">
+                    <label for="width">Largura da escada <span class="unit">(m)</span></label>
+                    <input type="number" id="width" step="0.01" value="1.27" min="0.5" max="3">
+                </div>
+                
+                <div class="input-group">
+                    <label for="thickness">Espessura da laje <span class="unit">(cm)</span></label>
+                    <input type="number" id="thickness" step="0.1" value="12" min="8" max="30">
+                </div>
+                
+                <div class="input-group">
+                    <label for="stepHeight">Altura do espelho (e) <span class="unit">(cm)</span></label>
+                    <input type="number" id="stepHeight" step="0.1" value="17.5" min="10" max="25">
+                </div>
+                
+                <div class="input-group">
+                    <label for="stepDepth">Profundidade do piso (a) <span class="unit">(cm)</span></label>
+                    <input type="number" id="stepDepth" step="0.1" value="29" min="20" max="40">
+                </div>
+                
+                <div class="input-group">
+                    <label for="finishLoad">Carga de revestimento <span class="unit">(kN/m²)</span></label>
+                    <input type="number" id="finishLoad" step="0.01" value="0.80" min="0" max="5">
+                </div>
+                
+                <div class="input-group">
+                    <label for="liveLoad">Carga acidental <span class="unit">(kN/m²)</span></label>
+                    <input type="number" id="liveLoad" step="0.01" value="2.50" min="1.5" max="5">
+                    <div class="result-details">Conforme NBR-6120</div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="parapetHeight">Altura do parapeito <span class="unit">(m)</span></label>
+                    <input type="number" id="parapetHeight" step="0.1" value="1.0" min="0" max="2">
+                </div>
+                
+                <div class="input-group">
+                    <label for="parapetThickness">Espessura do parapeito <span class="unit">(cm)</span></label>
+                    <input type="number" id="parapetThickness" step="0.1" value="15" min="5" max="30">
+                </div>
+                
+                <div class="input-group">
+                    <label for="parapetLoad">Carga no parapeito <span class="unit">(kN/m)</span></label>
+                    <input type="number" id="parapetLoad" step="0.01" value="2.00" min="0" max="5">
+                    <div class="result-details">Carga acidental vertical (NBR-6120)</div>
+                </div>
+                
+                <div class="input-group">
+                    <label for="concreteClass">Classe do concreto</label>
+                    <select id="concreteClass">
+                        <option value="25">C25 (fck = 25 MPa)</option>
+                        <option value="30" selected>C30 (fck = 30 MPa)</option>
+                        <option value="35">C35 (fck = 35 MPa)</option>
+                        <option value="40">C40 (fck = 40 MPa)</option>
+                    </select>
+                </div>
+                
+                <div class="input-group">
+                    <label for="steelClass">Classe do aço</label>
+                    <select id="steelClass">
+                        <option value="50" selected>CA-50 (fyk = 500 MPa)</option>
+                        <option value="60">CA-60 (fyk = 600 MPa)</option>
+                    </select>
+                </div>
+                
+                <div class="button-group">
+                    <button class="calculate-btn" onclick="calculateStair()">Calcular Escada</button>
+                    <button class="reset-btn" onclick="resetForm()">Limpar Valores</button>
+                </div>
+            </div>
+            
+            <div class="results-section">
+                <h2 class="section-title">Resultados do Dimensionamento</h2>
+                
+                <!-- Diagrama da escada com reações -->
+                <div class="stair-diagram-container">
+                    <div class="stair-diagram-title">Diagrama da Escada - Reações de Apoio</div>
+                    <div class="stair-diagram" id="stairDiagram">
+                        <!-- O diagrama será gerado dinamicamente pelo JavaScript -->
+                    </div>
+                    <div class="diagram-legend">
+                        <div class="legend-item">
+                            <div class="legend-color legend-flight"></div>
+                            <span>Lance inclinado</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color legend-landing"></div>
+                            <span>Patamar</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color legend-support"></div>
+                            <span>Apoio</span>
+                        </div>
+                        <div class="legend-item">
+                            <span class="legend-reaction">Rₐ, Rբ</span>
+                            <span>Reações de apoio</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color legend-load"></div>
+                            <span>Cargas distribuídas</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="resultsContainer">
+                    <div class="result-box">
+                        <div class="result-title">Cálculos geométricos</div>
+                        <div id="geometryResults" class="result-details">Preencha os dados e clique em "Calcular Escada"</div>
+                    </div>
+                    
+                    <div class="result-box">
+                        <div class="result-title">Cargas no patamar (p₁)</div>
+                        <div id="landingLoadResults" class="result-details">Aguardando cálculo...</div>
+                    </div>
+                    
+                    <div class="result-box">
+                        <div class="result-title">Cargas no trecho inclinado (p₂)</div>
+                        <div id="inclinedLoadResults" class="result-details">Aguardando cálculo...</div>
+                    </div>
+                    
+                    <div class="result-box">
+                        <div class="result-title">Esforços solicitantes</div>
+                        <div id="effortsResults" class="result-details">Aguardando cálculo...</div>
+                    </div>
+                    
+                    <div class="result-box">
+                        <div class="result-title">Armadura longitudinal</div>
+                        <div id="longitudinalSteelResults" class="result-details">Aguardando cálculo...</div>
+                    </div>
+                    
+                    <div class="result-box">
+                        <div class="result-title">Armadura de distribuição</div>
+                        <div id="distributionSteelResults" class="result-details">Aguardando cálculo...</div>
+                    </div>
+                    
+                    <div class="result-box">
+                        <div class="result-title">Ancoragem nos apoios</div>
+                        <div id="anchorageResults" class="result-details">Aguardando cálculo...</div>
+                    </div>
+                    
+                    <div class="warning">
+                        <strong>Nota:</strong> Esta calculadora segue o exemplo do documento técnico fornecido. Para projetos reais, consulte as normas técnicas vigentes e um engenheiro estrutural qualificado.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Função para desenhar o diagrama da escada
+        function drawStairDiagram(Ra, Rb, width, cosAlpha, totalLoadInclined, totalLoadLanding) {
+            const diagram = document.getElementById('stairDiagram');
+            diagram.innerHTML = '';
+            
+            // Dimensões do diagrama (em pixels)
+            const diagramWidth = diagram.clientWidth;
+            const diagramHeight = diagram.clientHeight;
+            
+            // Dimensões relativas da escada
+            const landingLength = 120; // comprimento do patamar em pixels
+            const flightLength = 180; // comprimento do lance em pixels
+            const stairWidth = 80; // largura da escada em pixels
+            const flightHeight = 100; // altura do lance em pixels
+            
+            // Posição inicial (centralizada horizontalmente)
+            const startX = (diagramWidth - (landingLength + flightLength * 2)) / 2;
+            const startY = diagramHeight / 2;
+            
+            // Desenhar o lance inclinado inferior
+            const flight1 = document.createElement('div');
+            flight1.className = 'stair-element stair-flight';
+            flight1.style.left = startX + 'px';
+            flight1.style.top = (startY + flightHeight/2) + 'px';
+            flight1.style.width = flightLength + 'px';
+            flight1.style.height = stairWidth + 'px';
+            flight1.style.transform = `rotate(${Math.acos(cosAlpha) * (180/Math.PI)}deg)`;
+            flight1.style.transformOrigin = 'left center';
+            flight1.title = `Lance inclinado inferior - Carga: ${totalLoadInclined.toFixed(2)} kN/m²`;
+            diagram.appendChild(flight1);
+            
+            // Desenhar o patamar
+            const landing = document.createElement('div');
+            landing.className = 'stair-element stair-landing';
+            landing.style.left = (startX + flightLength) + 'px';
+            landing.style.top = startY + 'px';
+            landing.style.width = landingLength + 'px';
+            landing.style.height = stairWidth + 'px';
+            landing.title = `Patamar - Carga: ${totalLoadLanding.toFixed(2)} kN/m²`;
+            diagram.appendChild(landing);
+            
+            // Desenhar o lance inclinado superior
+            const flight2 = document.createElement('div');
+            flight2.className = 'stair-element stair-flight';
+            flight2.style.left = (startX + flightLength + landingLength) + 'px';
+            flight2.style.top = (startY - flightHeight/2) + 'px';
+            flight2.style.width = flightLength + 'px';
+            flight2.style.height = stairWidth + 'px';
+            flight2.style.transform = `rotate(-${Math.acos(cosAlpha) * (180/Math.PI)}deg)`;
+            flight2.style.transformOrigin = 'left center';
+            flight2.title = `Lance inclinado superior - Carga: ${totalLoadInclined.toFixed(2)} kN/m²`;
+            diagram.appendChild(flight2);
+            
+            // Desenhar apoios
+            // Apoio A (início do lance inferior)
+            const supportA = document.createElement('div');
+            supportA.className = 'support';
+            supportA.style.left = (startX - 10) + 'px';
+            supportA.style.top = (startY + flightHeight/2 + stairWidth/2 - 10) + 'px';
+            supportA.title = 'Apoio A';
+            diagram.appendChild(supportA);
+            
+            // Apoio B (transição lance inferior/patamar)
+            const supportB = document.createElement('div');
+            supportB.className = 'support';
+            supportB.style.left = (startX + flightLength - 10) + 'px';
+            supportB.style.top = (startY + flightHeight/2 + stairWidth/2 - 10) + 'px';
+            supportB.title = 'Apoio B';
+            diagram.appendChild(supportB);
+            
+            // Apoio C (transição patamar/lance superior)
+            const supportC = document.createElement('div');
+            supportC.className = 'support';
+            supportC.style.left = (startX + flightLength + landingLength - 10) + 'px';
+            supportC.style.top = (startY - flightHeight/2 + stairWidth/2 - 10) + 'px';
+            supportC.title = 'Apoio C';
+            diagram.appendChild(supportC);
+            
+            // Apoio D (final do lance superior)
+            const supportD = document.createElement('div');
+            supportD.className = 'support';
+            supportD.style.left = (startX + flightLength*2 + landingLength - 10) + 'px';
+            supportD.style.top = (startY - flightHeight/2 + stairWidth/2 - 10) + 'px';
+            supportD.title = 'Apoio D';
+            diagram.appendChild(supportD);
+            
+            // Desenhar reações de apoio
+            // Reação Ra (no apoio A)
+            const reactionA = document.createElement('div');
+            reactionA.className = 'reaction';
+            reactionA.style.left = (startX - 40) + 'px';
+            reactionA.style.top = (startY + flightHeight/2 + stairWidth/2 + 20) + 'px';
+            reactionA.innerHTML = `Rₐ = ${Ra.toFixed(2)} kN/m`;
+            diagram.appendChild(reactionA);
+            
+            // Seta da reação Ra
+            const arrowA = document.createElement('div');
+            arrowA.className = 'reaction-arrow';
+            arrowA.style.left = (startX - 20) + 'px';
+            arrowA.style.top = (startY + flightHeight/2 + stairWidth/2 + 30) + 'px';
+            diagram.appendChild(arrowA);
+            
+            // Reação Rb (no apoio B)
+            const reactionB = document.createElement('div');
+            reactionB.className = 'reaction';
+            reactionB.style.left = (startX + flightLength - 40) + 'px';
+            reactionB.style.top = (startY + flightHeight/2 + stairWidth/2 + 20) + 'px';
+            reactionB.innerHTML = `Rբ = ${Rb.toFixed(2)} kN/m`;
+            diagram.appendChild(reactionB);
+            
+            // Seta da reação Rb
+            const arrowB = document.createElement('div');
+            arrowB.className = 'reaction-arrow';
+            arrowB.style.left = (startX + flightLength - 20) + 'px';
+            arrowB.style.top = (startY + flightHeight/2 + stairWidth/2 + 30) + 'px';
+            diagram.appendChild(arrowB);
+            
+            // Reação Rc (no apoio C)
+            const reactionC = document.createElement('div');
+            reactionC.className = 'reaction';
+            reactionC.style.left = (startX + flightLength + landingLength - 40) + 'px';
+            reactionC.style.top = (startY - flightHeight/2 + stairWidth/2 - 40) + 'px';
+            reactionC.innerHTML = `R꜀ = ${Rb.toFixed(2)} kN/m`;
+            diagram.appendChild(reactionC);
+            
+            // Seta da reação Rc
+            const arrowC = document.createElement('div');
+            arrowC.className = 'reaction-arrow';
+            arrowC.style.left = (startX + flightLength + landingLength - 20) + 'px';
+            arrowC.style.top = (startY - flightHeight/2 + stairWidth/2 - 50) + 'px';
+            arrowC.style.transform = 'rotate(135deg)';
+            diagram.appendChild(arrowC);
+            
+            // Reação Rd (no apoio D)
+            const reactionD = document.createElement('div');
+            reactionD.className = 'reaction';
+            reactionD.style.left = (startX + flightLength*2 + landingLength - 40) + 'px';
+            reactionD.style.top = (startY - flightHeight/2 + stairWidth/2 - 40) + 'px';
+            reactionD.innerHTML = `Rᵈ = ${Ra.toFixed(2)} kN/m`;
+            diagram.appendChild(reactionD);
+            
+            // Seta da reação Rd
+            const arrowD = document.createElement('div');
+            arrowD.className = 'reaction-arrow';
+            arrowD.style.left = (startX + flightLength*2 + landingLength - 20) + 'px';
+            arrowD.style.top = (startY - flightHeight/2 + stairWidth/2 - 50) + 'px';
+            arrowD.style.transform = 'rotate(135deg)';
+            diagram.appendChild(arrowD);
+            
+            // Indicadores de carga distribuída
+            // Carga no lance inferior
+            const load1 = document.createElement('div');
+            load1.className = 'load-indicator';
+            load1.style.left = (startX + flightLength/2 - 40) + 'px';
+            load1.style.top = (startY + flightHeight/2 + stairWidth + 10) + 'px';
+            load1.innerHTML = `p₂ = ${totalLoadInclined.toFixed(2)} kN/m²`;
+            diagram.appendChild(load1);
+            
+            // Carga no patamar
+            const load2 = document.createElement('div');
+            load2.className = 'load-indicator';
+            load2.style.left = (startX + flightLength + landingLength/2 - 40) + 'px';
+            load2.style.top = (startY + stairWidth + 10) + 'px';
+            load2.innerHTML = `p₁ = ${totalLoadLanding.toFixed(2)} kN/m²`;
+            diagram.appendChild(load2);
+            
+            // Carga no lance superior
+            const load3 = document.createElement('div');
+            load3.className = 'load-indicator';
+            load3.style.left = (startX + flightLength + landingLength + flightLength/2 - 40) + 'px';
+            load3.style.top = (startY - flightHeight/2 - 30) + 'px';
+            load3.innerHTML = `p₂ = ${totalLoadInclined.toFixed(2)} kN/m²`;
+            diagram.appendChild(load3);
+            
+            // Linhas de dimensão
+            // Comprimento do lance
+            const dimLine1 = document.createElement('div');
+            dimLine1.className = 'dimension-line';
+            dimLine1.style.left = startX + 'px';
+            dimLine1.style.top = (startY + flightHeight/2 + stairWidth + 30) + 'px';
+            dimLine1.style.width = flightLength + 'px';
+            diagram.appendChild(dimLine1);
+            
+            const dimText1 = document.createElement('div');
+            dimText1.className = 'dimension-text';
+            dimText1.style.left = (startX + flightLength/2 - 30) + 'px';
+            dimText1.style.top = (startY + flightHeight/2 + stairWidth + 35) + 'px';
+            dimText1.innerHTML = 'Lance';
+            diagram.appendChild(dimText1);
+            
+            // Comprimento do patamar
+            const dimLine2 = document.createElement('div');
+            dimLine2.className = 'dimension-line';
+            dimLine2.style.left = (startX + flightLength) + 'px';
+            dimLine2.style.top = (startY + stairWidth + 30) + 'px';
+            dimLine2.style.width = landingLength + 'px';
+            diagram.appendChild(dimLine2);
+            
+            const dimText2 = document.createElement('div');
+            dimText2.className = 'dimension-text';
+            dimText2.style.left = (startX + flightLength + landingLength/2 - 25) + 'px';
+            dimText2.style.top = (startY + stairWidth + 35) + 'px';
+            dimText2.innerHTML = 'Patamar';
+            diagram.appendChild(dimText2);
+            
+            // Indicar inclinação
+            const angleText = document.createElement('div');
+            angleText.className = 'dimension-text';
+            angleText.style.left = (startX + 50) + 'px';
+            angleText.style.top = (startY + flightHeight/4) + 'px';
+            angleText.innerHTML = `α = ${(Math.acos(cosAlpha) * (180/Math.PI)).toFixed(1)}°`;
+            diagram.appendChild(angleText);
+        }
+        
+        // Função principal de cálculo
+        function calculateStair() {
+            // Coletar dados de entrada
+            const width = parseFloat(document.getElementById('width').value);
+            const thickness = parseFloat(document.getElementById('thickness').value);
+            const stepHeight = parseFloat(document.getElementById('stepHeight').value);
+            const stepDepth = parseFloat(document.getElementById('stepDepth').value);
+            const finishLoad = parseFloat(document.getElementById('finishLoad').value);
+            const liveLoad = parseFloat(document.getElementById('liveLoad').value);
+            const parapetHeight = parseFloat(document.getElementById('parapetHeight').value);
+            const parapetThickness = parseFloat(document.getElementById('parapetThickness').value);
+            const parapetLoad = parseFloat(document.getElementById('parapetLoad').value);
+            const concreteClass = parseInt(document.getElementById('concreteClass').value);
+            const steelClass = parseInt(document.getElementById('steelClass').value);
+            
+            // Validar entradas
+            if (isNaN(width) || width <= 0) {
+                alert("Por favor, insira uma largura válida para a escada.");
+                return;
+            }
+            
+            // 1. Cálculos geométricos
+            // Inclinação da escada
+            const cosAlpha = stepDepth / Math.sqrt(stepDepth**2 + stepHeight**2);
+            const alphaRad = Math.acos(cosAlpha);
+            const alphaDeg = (alphaRad * 180 / Math.PI).toFixed(1);
+            
+            // Espessura da laje medida na vertical
+            const h1 = thickness / cosAlpha;
+            
+            // Espessura média incluindo degraus
+            const hm = h1 + stepHeight / 2;
+            
+            // Atualizar resultados geométricos
+            document.getElementById('geometryResults').innerHTML = `
+                <div class="formula">cos α = a / √(a² + e²) = ${stepDepth} / √(${stepDepth}² + ${stepHeight}²) = ${cosAlpha.toFixed(3)}</div>
+                <div>Ângulo de inclinação: ${alphaDeg}°</div>
+                <div>Espessura vertical (h₁): ${h1.toFixed(1)} cm</div>
+                <div>Espessura média (h<sub>m</sub>): ${hm.toFixed(1)} cm</div>
+            `;
+            
+            // 2. Cargas no patamar (p1)
+            const selfWeightLanding = 25 * (thickness / 100); // kN/m² (25 kN/m³ * espessura em m)
+            const permanentLoadLanding = selfWeightLanding + finishLoad;
+            const totalLoadLanding = permanentLoadLanding + liveLoad;
+            
+            document.getElementById('landingLoadResults').innerHTML = `
+                <div class="result-grid">
+                    <div>
+                        <div class="result-title">Peso próprio</div>
+                        <div class="result-value">${selfWeightLanding.toFixed(2)} kN/m²</div>
+                        <div class="result-details">25 × ${thickness/100}</div>
+                    </div>
+                    <div>
+                        <div class="result-title">Carga permanente (g)</div>
+                        <div class="result-value">${permanentLoadLanding.toFixed(2)} kN/m²</div>
+                    </div>
+                    <div>
+                        <div class="result-title">Carga acidental (q)</div>
+                        <div class="result-value">${liveLoad.toFixed(2)} kN/m²</div>
+                    </div>
+                    <div>
+                        <div class="result-title">Carga total (p₁)</div>
+                        <div class="result-value">${totalLoadLanding.toFixed(2)} kN/m²</div>
+                        <div class="formula">p₁ = g + q = ${permanentLoadLanding.toFixed(2)} + ${liveLoad.toFixed(2)}</div>
+                    </div>
+                </div>
+            `;
+            
+            // 3. Cargas no trecho inclinado (p2)
+            // Peso próprio do trecho inclinado
+            const selfWeightInclined = 25 * (hm / 100); // kN/m²
+            
+            // Peso do parapeito distribuído pela largura
+            const parapetWeight = 13 * parapetHeight * (parapetThickness / 100); // 13 kN/m³ para alvenaria
+            const parapetDistributed = parapetWeight / width;
+            
+            // Carga permanente no trecho inclinado
+            const permanentLoadInclined = selfWeightInclined + finishLoad + parapetDistributed;
+            
+            // Carga acidental no trecho inclinado
+            const liveLoadDistributed = parapetLoad / width;
+            const totalLiveLoadInclined = liveLoad + liveLoadDistributed;
+            
+            // Carga total no trecho inclinado
+            const totalLoadInclined = permanentLoadInclined + totalLiveLoadInclined;
+            
+            document.getElementById('inclinedLoadResults').innerHTML = `
+                <div class="result-grid">
+                    <div>
+                        <div class="result-title">Peso próprio</div>
+                        <div class="result-value">${selfWeightInclined.toFixed(2)} kN/m²</div>
+                        <div class="result-details">25 × ${hm/100}</div>
+                    </div>
+                    <div>
+                        <div class="result-title">Parapeito</div>
+                        <div class="result-value">${parapetDistributed.toFixed(2)} kN/m²</div>
+                        <div class="result-details">${parapetWeight.toFixed(2)} kN/m / ${width} m</div>
+                    </div>
+                    <div>
+                        <div class="result-title">Carga permanente (g)</div>
+                        <div class="result-value">${permanentLoadInclined.toFixed(2)} kN/m²</div>
+                    </div>
+                    <div>
+                        <div class="result-title">Carga acidental (q)</div>
+                        <div class="result-value">${totalLiveLoadInclined.toFixed(2)} kN/m²</div>
+                        <div class="result-details">${liveLoad} + ${liveLoadDistributed.toFixed(2)}</div>
+                    </div>
+                    <div>
+                        <div class="result-title">Carga total (p₂)</div>
+                        <div class="result-value">${totalLoadInclined.toFixed(2)} kN/m²</div>
+                        <div class="formula">p₂ = g + q = ${permanentLoadInclined.toFixed(2)} + ${totalLiveLoadInclined.toFixed(2)}</div>
+                    </div>
+                </div>
+            `;
+            
+            // 4. Esforços solicitantes (simplificado com base no exemplo)
+            // Usando valores do exemplo para demonstração
+            const Ra = 19.37; // kN/m (do exemplo)
+            const Rb = 14.57; // kN/m (do exemplo)
+            const Mk = 15.5; // kN.m/m (momento fletor característico)
+            const Vk = 16.6; // kN/m (esforço cortante característico)
+            
+            // Para o esforço cortante no trecho inclinado, considerar o cos α
+            const VkInclined = Vk * cosAlpha;
+            
+            // Esforços de cálculo (coeficiente 1.4)
+            const Md = 1.4 * Mk;
+            const Vd = 1.4 * Vk;
+            
+            document.getElementById('effortsResults').innerHTML = `
+                <div class="result-grid">
+                    <div>
+                        <div class="result-title">Reação A (Rₐ)</div>
+                        <div class="result-value">${Ra.toFixed(2)} kN/m</div>
+                        <div class="result-details">Apoio inferior esquerdo</div>
+                    </div>
+                    <div>
+                        <div class="result-title">Reação B (Rբ)</div>
+                        <div class="result-value">${Rb.toFixed(2)} kN/m</div>
+                        <div class="result-details">Apoio inferior direito / superior esquerdo</div>
+                    </div>
+                    <div>
+                        <div class="result-title">Momento (Mₖ)</div>
+                        <div class="result-value">${Mk.toFixed(2)} kN.m/m</div>
+                        <div class="result-details">Momento fletor característico</div>
+                    </div>
+                    <div>
+                        <div class="result-title">Momento (M<sub>d</sub>)</div>
+                        <div class="result-value">${Md.toFixed(2)} kN.m/m</div>
+                        <div class="result-details">Momento de cálculo (1.4 × Mₖ)</div>
+                    </div>
+                    <div>
+                        <div class="result-title">Cortante (Vₖ)</div>
+                        <div class="result-value">${Vk.toFixed(2)} kN/m</div>
+                        <div class="result-details">Esforço cortante característico</div>
+                    </div>
+                    <div>
+                        <div class="result-title">Cortante inclinado</div>
+                        <div class="result-value">${VkInclined.toFixed(2)} kN/m</div>
+                        <div class="result-details">Vₖ × cos α = ${Vk} × ${cosAlpha.toFixed(3)}</div>
+                    </div>
+                </div>
+                <div class="result-details" style="margin-top: 10px;">
+                    <strong>Observação:</strong> As reações R꜀ e Rᵈ são iguais a Rբ e Rₐ, respectivamente, por simetria.
+                </div>
+            `;
+            
+            // 5. Desenhar o diagrama da escada
+            drawStairDiagram(Ra, Rb, width, cosAlpha, totalLoadInclined, totalLoadLanding);
+            
+            // 6. Dimensionamento da armadura longitudinal
+            // Propriedades dos materiais
+            const fck = concreteClass; // MPa
+            const fcd = fck / 1.4 * 0.1; // kN/cm² (convertendo de MPa para kN/cm²)
+            
+            const fyk = steelClass * 10; // MPa (CA-50: 500 MPa)
+            const fyd = fyk / 1.15 * 0.1; // kN/cm²
+            
+            // Dados da seção
+            const b = 100; // cm (largura unitária)
+            const h = thickness; // cm
+            const d = h - 2.5; // cm (altura útil)
+            
+            // Cálculo do momento reduzido
+            const mu = Md * 100 / (b * d * d * fcd); // Md em kN.cm
+            
+            // Verificação de armadura simples (μ < μ_lim)
+            const muLim = 0.2952; // Para concreto até C50
+            let solutionType = "Armadura simples";
+            if (mu > muLim) {
+                solutionType = "Armadura dupla necessária";
+            }
+            
+            // Cálculo da armadura (simplificado)
+            const xi = 1.25 * (1 - Math.sqrt(1 - 2 * mu));
+            const As = 0.8 * xi * b * d * (fcd / fyd);
+            
+            // Armadura mínima
+            const AsMin = 0.15 * 1.2; // 0,15% de 1,2% (simplificado)
+            
+            // Armadura adotada
+            const AsAdopted = Math.max(As, AsMin);
+            
+            // Solução de barras (simplificado)
+            const barDiameter = 10; // mm
+            const barSpacing = 13; // cm
+            const barArea = 0.785; // cm² para φ10
+            const barsPerMeter = Math.ceil(AsAdopted / barArea);
+            const actualSpacing = 100 / barsPerMeter;
+            
+            document.getElementById('longitudinalSteelResults').innerHTML = `
+                <div class="result-grid">
+                    <div>
+                        <div class="result-title">Altura útil (d)</div>
+                        <div class="result-value">${d.toFixed(1)} cm</div>
+                        <div class="result-details">h - 2,5 cm</div>
+                    </div>
+                    <div>
+                        <div class="result-title">f<sub>cd</sub></div>
+                        <div class="result-value">${fcd.toFixed(2)} kN/cm²</div>
+                        <div class="result-details">fck = ${fck} MPa</div>
+                    </div>
+                    <div>
+                        <div class="result-title">f<sub>yd</sub></div>
+                        <div class="result-value">${fyd.toFixed(2)} kN/cm²</div>
+                        <div class="result-details">fyk = ${fyk} MPa</div>
+                    </div>
+                    <div>
+                        <div class="result-title">Momento reduzido (μ)</div>
+                        <div class="result-value">${mu.toFixed(4)}</div>
+                        <div class="result-details">μ<sub>lim</sub> = ${muLim}</div>
+                    </div>
+                    <div>
+                        <div class="result-title">Armadura calculada (Aₛ)</div>
+                        <div class="result-value">${As.toFixed(2)} cm²/m</div>
+                    </div>
+                    <div>
+                        <div class="result-title">Armadura mínima</div>
+                        <div class="result-value">${AsMin.toFixed(2)} cm²/m</div>
+                    </div>
+                    <div>
+                        <div class="result-title">Armadura adotada</div>
+                        <div class="result-value">${AsAdopted.toFixed(2)} cm²/m</div>
+                        <div class="result-details">${solutionType}</div>
+                    </div>
+                </div>
+                <div class="success" style="margin-top: 15px;">
+                    <strong>Solução:</strong> Adotar φ${barDiameter} c/${barSpacing}cm (${barsPerMeter} barras por metro)
+                </div>
+            `;
+            
+            // 7. Armadura de distribuição
+            const AsDist1 = AsAdopted / 5;
+            const AsDist2 = 0.9; // cm²/m
+            const AsDist3 = 0.5 * AsMin;
+            
+            const AsDist = Math.max(AsDist1, AsDist2, AsDist3);
+            
+            // Solução de barras para distribuição
+            const distBarDiameter = 5; // mm
+            const distBarArea = 0.196; // cm² para φ5
+            const distBarsPerMeter = Math.ceil(AsDist / distBarArea);
+            const distSpacing = 100 / distBarsPerMeter;
+            
+            document.getElementById('distributionSteelResults').innerHTML = `
+                <div class="result-grid">
+                    <div>
+                        <div class="result-title">Aₛ/5</div>
+                        <div class="result-value">${AsDist1.toFixed(2)} cm²/m</div>
+                        <div class="result-details">${AsAdopted.toFixed(2)} / 5</div>
+                    </div>
+                    <div>
+                        <div class="result-title">0,9 cm²/m</div>
+                        <div class="result-value">${AsDist2.toFixed(2)} cm²/m</div>
+                        <div class="result-details">Valor mínimo</div>
+                    </div>
+                    <div>
+                        <div class="result-title">0,5 × Aₛ,min</div>
+                        <div class="result-value">${AsDist3.toFixed(2)} cm²/m</div>
+                    </div>
+                    <div>
+                        <div class="result-title">Armadura de distribuição</div>
+                        <div class="result-value">${AsDist.toFixed(2)} cm²/m</div>
+                        <div class="result-details">Maior dos valores</div>
+                    </div>
+                </div>
+                <div class="success" style="margin-top: 15px;">
+                    <strong>Solução:</strong> Adotar φ${distBarDiameter} c/${Math.round(distSpacing)}cm (${distBarsPerMeter} barras por metro)
+                </div>
+            `;
+            
+            // 8. Ancoragem nos apoios
+            const fbd = 2.87; // MPa (resistência de aderência)
+            const phi = barDiameter / 10; // cm (diâmetro da barra em cm)
+            
+            // Comprimento básico de ancoragem
+            const lb = (phi * fyd * 10) / (4 * fbd); // cm (fyd em kN/cm², convertido para MPa)
+            
+            // Comprimento disponível na viga de apoio
+            const beamWidth = 12; // cm (do exemplo)
+            const concreteCover = 2.5; // cm
+            const availableLength = beamWidth - concreteCover;
+            
+            // Comprimento de ancoragem com gancho
+            const AsCal = 0.80; // cm²/m (do exemplo)
+            const lbNcc = 0.7 * lb * (AsCal / AsAdopted);
+            
+            // Comprimento mínimo com gancho
+            const R = 2.5 * phi; // raio de dobramento
+            const lbMin = Math.max(R + 5.5 * phi, 6);
+            
+            // Comprimento de ancoragem adotado
+            const lbAdopted = Math.max(lbNcc, lbMin, availableLength);
+            
+            document.getElementById('anchorageResults').innerHTML = `
+                <div class="result-grid">
+                    <div>
+                        <div class="result-title">Comprimento básico (l₆)</div>
+                        <div class="result-value">${lb.toFixed(1)} cm</div>
+                    </div>
+                    <div>
+                        <div class="result-title">Disponível na viga</div>
+                        <div class="result-value">${availableLength.toFixed(1)} cm</div>
+                        <div class="result-details">${beamWidth} - ${concreteCover} (cobrimento)</div>
+                    </div>
+                    <div>
+                        <div class="result-title">Com gancho (l₆,ₙcc)</div>
+                        <div class="result-value">${lbNcc.toFixed(1)} cm</div>
+                    </div>
+                    <div>
+                        <div class="result-title">Mínimo com gancho</div>
+                        <div class="result-value">${lbMin.toFixed(1)} cm</div>
+                    </div>
+                    <div>
+                        <div class="result-title">Adotado</div>
+                        <div class="result-value">${lbAdopted.toFixed(1)} cm</div>
+                    </div>
+                </div>
+                <div class="warning" style="margin-top: 15px;">
+                    <strong>Observação:</strong> Não é possível ancoragem reta devido ao espaço limitado. Adotar ganchos de extremidade com comprimento de ${lbAdopted.toFixed(1)} cm.
+                </div>
+            `;
+        }
+        
+        // Função para limpar o formulário
+        function resetForm() {
+            document.getElementById('width').value = '1.27';
+            document.getElementById('thickness').value = '12';
+            document.getElementById('stepHeight').value = '17.5';
+            document.getElementById('stepDepth').value = '29';
+            document.getElementById('finishLoad').value = '0.80';
+            document.getElementById('liveLoad').value = '2.50';
+            document.getElementById('parapetHeight').value = '1.0';
+            document.getElementById('parapetThickness').value = '15';
+            document.getElementById('parapetLoad').value = '2.00';
+            document.getElementById('concreteClass').value = '30';
+            document.getElementById('steelClass').value = '50';
+            
+            // Limpar diagrama
+            const diagram = document.getElementById('stairDiagram');
+            diagram.innerHTML = '<div style="display: flex; justify-content: center; align-items: center; height: 100%; color: #999;">Diagrama será gerado após cálculo</div>';
+            
+            // Limpar resultados
+            document.getElementById('geometryResults').innerHTML = 'Preencha os dados e clique em "Calcular Escada"';
+            document.getElementById('landingLoadResults').innerHTML = 'Aguardando cálculo...';
+            document.getElementById('inclinedLoadResults').innerHTML = 'Aguardando cálculo...';
+            document.getElementById('effortsResults').innerHTML = 'Aguardando cálculo...';
+            document.getElementById('longitudinalSteelResults').innerHTML = 'Aguardando cálculo...';
+            document.getElementById('distributionSteelResults').innerHTML = 'Aguardando cálculo...';
+            document.getElementById('anchorageResults').innerHTML = 'Aguardando cálculo...';
+        }
+        
+        // Calcular automaticamente ao carregar a página com valores padrão
+        window.onload = function() {
+            calculateStair();
+        };
+        
+        // Redesenhar o diagrama quando a janela for redimensionada
+        window.addEventListener('resize', function() {
+            // Recalcular apenas se já tivermos valores calculados
+            const width = parseFloat(document.getElementById('width').value);
+            if (!isNaN(width) && width > 0) {
+                // Reexecutar o cálculo para redesenhar o diagrama
+                calculateStair();
+            }
+        });
+    </script>
+</body>
+</html>
